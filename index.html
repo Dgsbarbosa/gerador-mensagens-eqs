@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,19 +13,25 @@
       padding: 20px;
       background: #f9f9f9;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
+
     label {
       display: block;
       margin-top: 10px;
     }
-    input, textarea, select, button {
+
+    input,
+    textarea,
+    select,
+    button {
       width: 100%;
       margin-top: 5px;
       padding: 8px;
       border: 1px solid #ccc;
       border-radius: 5px;
     }
+
     #output {
       margin-top: 20px;
       background: #fff;
@@ -34,11 +41,13 @@
       word-wrap: break-word;
       overflow-wrap: break-word;
       white-space: pre-wrap;
-      
+
     }
+
     .hidden {
       display: none;
     }
+
     #toggleForm {
       margin-top: 15px;
       background: #eee;
@@ -48,8 +57,24 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
+    footer {
+      padding: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .destaque a {
+      text-decoration: none;
+
+    }
+
+    .destaque a:hover {
+      color: blue;
+    }
   </style>
 </head>
+
 <body>
   <h2>Gerador de Mensagem de Serviço</h2>
 
@@ -85,6 +110,11 @@
   <div id="output"></div>
   <button type="button" onclick="copiarTexto()">Copiar Texto</button>
 
+  <footer>
+    <p>Developed by <span class="destaque"><a href="https://professional-presentation-website.vercel.app/"
+          target="_blank">Douglas Barbosa</a></span></p>
+  </footer>
+
   <script>
     function gerarMensagem() {
       const local = document.getElementById('local').value;
@@ -97,11 +127,11 @@
       // Formata a data no formato dd/mm/yyyy
       let dataFormatada = new Date(data).toLocaleDateString('pt-BR');
 
-      if (dataFormatada === "Invalid Date"){
+      if (dataFormatada === "Invalid Date") {
         dataFormatada = "Data não informada";
       }
-      const mensagem = 
-`*📍 Local:* ${local}
+      const mensagem =
+        `*📍 Local:* ${local}
 
 *📌 Status:* ${status}
 
@@ -151,4 +181,5 @@
     }
   </script>
 </body>
+
 </html>
