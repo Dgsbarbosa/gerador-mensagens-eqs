@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerador de Mensagens de Serviço</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input, textarea, select, button {
+      width: 100%;
+      margin-top: 5px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    #output {
+      margin-top: 20px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
+      
+    }
+    .hidden {
+      display: none;
+    }
+    #toggleForm {
+      margin-top: 15px;
+      background: #eee;
+      color: #333;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Gerador de Mensagem de Serviço</h2>
+
+  <div id="formulario">
+    <label>Local</label>
+    <input type="text" id="local" />
+
+    <label>Status</label>
+    <select id="status">
+      <option value="Concluído">Concluído</option>
+      <option value="Em andamento">Em andamento</option>
+      <option value="Aguardando material">Aguardando material</option>
+      <option value="Na fila">Na fila</option>
+    </select>
+
+    <label>Chamado</label>
+    <textarea id="chamado"></textarea>
+
+    <label>Ação Realizada</label>
+    <textarea id="acao"></textarea>
+
+    <label>Data de Execução</label>
+    <input type="date" id="data" />
+
+    <label>Executado por</label>
+    <input type="text" id="executado" placeholder="Ex: João da Silva - Técnico - Avaré" />
+
+    <button type="button" onclick="gerarMensagem()">Gerar Mensagem</button>
+  </div>
+
+  <button id="toggleForm" class="hidden" onclick="abrirFormulario()">⬅ Reabrir Formulário</button>
+
+  <div id="output"></div>
+  <button type="button" onclick="copiarTexto()">Copiar Texto</button>
+
+  <script>
+    function gerarMensagem() {
+      const local = document.getElementById('local').value;
+      const status = document.getElementById('status').value;
+      const chamado = document.getElementById('chamado').value;
+      const acao = document.getElementById('acao').value;
+      const data = document.getElementById('data').value;
+      const executado = document.getElementById('executado').value;
+
+      // Formata a data no formato dd/mm/yyyy
+      let dataFormatada = new Date(data).toLocaleDateString('pt-BR');
+
+      if (dataFormatada === "Invalid Date"){
+        dataFormatada = "Data não informada";
+      }
+      const mensagem = 
+`*📍 Local:* ${local}
+
+*📌 Status:* ${status}
+
+*🛠️ Chamado:* ${chamado}
+
+*✅ Ação realizada:* ${acao}
+
+*📅 Data da execução:* ${dataFormatada}
+
+*👷 Executado por:* ${executado}`;
+
+      document.getElementById('output').innerHTML = mensagem;
+
+      // Oculta formulário e mostra botão de reabrir
+      document.getElementById('formulario').classList.add('hidden');
+      document.getElementById('toggleForm').classList.remove('hidden');
+    }
+
+    function abrirFormulario() {
+      document.getElementById('formulario').classList.remove('hidden');
+      document.getElementById('toggleForm').classList.add('hidden');
+    }
+
+    function copiarTexto() {
+      const texto = document.getElementById('output').innerText;
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(texto)
+          .then(() => alert('Texto copiado com sucesso!'))
+          .catch((err) => alert('Erro ao copiar texto: ' + err));
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = texto;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+          document.execCommand('copy');
+          alert('Texto copiado com sucesso!');
+        } catch (err) {
+          alert('Erro ao copiar texto: ' + err);
+        }
+
+        document.body.removeChild(textArea);
+      }
+    }
+  </script>
+</body>
+</html>
