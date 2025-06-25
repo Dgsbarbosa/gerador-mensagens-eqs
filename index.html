@@ -1,122 +1,159 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gerador de Mensagens de Serviço</title>
+  <title>Relatório de Serviço</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       max-width: 600px;
       margin: 20px auto;
       padding: 20px;
-      background: #f9f9f9;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background: #f4f4f4;
     }
 
     label {
-      display: block;
+      font-weight: bold;
       margin-top: 10px;
+      display: block;
     }
 
-    input,
-    textarea,
-    select,
-    button {
+    input, textarea, select, button {
       width: 100%;
+      padding: 10px;
       margin-top: 5px;
-      padding: 8px;
-      border: 1px solid #ccc;
       border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 15px;
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
     }
 
     #output {
       margin-top: 20px;
+      white-space: pre-wrap;
       background: #fff;
       padding: 15px;
       border-radius: 5px;
       border: 1px solid #ccc;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      white-space: pre-wrap;
-
     }
 
-    .hidden {
+    #copiedAlert {
+      margin-top: 10px;
+      color: green;
+      font-weight: bold;
       display: none;
     }
 
-    #toggleForm {
+    #formulario.hidden {
+      display: none;
+    }
+
+    #reabrir {
+      display: none;
       margin-top: 15px;
-      background: #eee;
-      color: #333;
-      border: none;
-      padding: 10px;
-      border-radius: 5px;
-      cursor: pointer;
+      background: #6c757d;
     }
 
     footer {
-      padding: 20px;
       text-align: center;
+      margin-top: 30px;
       font-weight: bold;
     }
 
-    .destaque a {
+    footer a {
       text-decoration: none;
-
+      color: #333;
+      transition: color 0.3s;
     }
 
-    .destaque a:hover {
-      color: blue;
+    footer a:hover {
+      color: #007bff;
+    }
+
+    select[data-status="Concluído"] {
+      background-color: #d4edda;
+    }
+
+    select[data-status="Em andamento"] {
+      background-color: #d1ecf1;
+    }
+
+    select[data-status="Aguardando material"] {
+      background-color: #fff3cd;
+    }
+
+    select[data-status="Na fila"] {
+      background-color: #e2e3e5;
     }
   </style>
 </head>
-
 <body>
-  <h2>Gerador de Mensagem de Serviço</h2>
+  <h2>Relatório de Serviço</h2>
 
   <div id="formulario">
-    <label>Local</label>
-    <input type="text" id="local" />
+    <label for="idChamado">ID do Chamado</label>
+    <input type="text" id="idChamado" placeholder="Ex: 123456" />
 
-    <label>Status</label>
-    <select id="status">
-      <option value="Concluído">Concluído</option>
-      <option value="Em andamento">Em andamento</option>
-      <option value="Aguardando material">Aguardando material</option>
-      <option value="Na fila">Na fila</option>
+    <label for="local">Local</label>
+    <input type="text" id="local" placeholder="Ex: Fórum de Jaú" />
+
+    <label for="status">Status</label>
+    <select id="status" onchange="atualizarCorStatus()" data-status="">
+      <option>Concluído</option>
+      <option>Em andamento</option>
+      <option>Aguardando material</option>
+      <option>Na fila</option>
     </select>
 
-    <label>Chamado</label>
-    <textarea id="chamado"></textarea>
+    <label for="chamado">Descrição do Chamado</label>
+    <textarea id="chamado" placeholder="Descreva o chamado..."></textarea>
 
-    <label>Ação Realizada</label>
-    <textarea id="acao"></textarea>
+    <label for="acao">Ação Realizada</label>
+    <textarea id="acao" placeholder="Descreva a ação realizada..."></textarea>
 
-    <label>Data de Execução</label>
+    <label for="data">Data da Execução</label>
     <input type="date" id="data" />
 
-    <label>Executado por</label>
+    <label for="executado">Executado por</label>
     <input type="text" id="executado" placeholder="Ex: João da Silva - Técnico - Avaré" />
 
-    <button type="button" onclick="gerarMensagem()">Gerar Mensagem</button>
+
   </div>
+	<div>
+    <button onclick="gerarMensagem()">Gerar e Copiar Texto</button>
+    <button onclick="abrirWhatsapp()">Abrir WhatsApp</button>
+    <button onclick="limparFormulario()">Limpar Formulário</button>
+</div>
+  <button id="reabrir" onclick="reabrirFormulario()">⬅ Editar formulário</button>
 
-  <button id="toggleForm" class="hidden" onclick="abrirFormulario()">⬅ Reabrir Formulário</button>
-
+  <div id="copiedAlert">Texto copiado com sucesso!</div>
   <div id="output"></div>
-  <button type="button" onclick="copiarTexto()">Copiar Texto</button>
 
   <footer>
-    <p>Developed by <span class="destaque"><a href="https://professional-presentation-website.vercel.app/"
-          target="_blank">Douglas Barbosa</a></span></p>
+    Desenvolvido por <a href="https://professional-presentation-website.vercel.app/" target="_blank">Douglas Barbosa</a>
   </footer>
 
   <script>
+    function atualizarCorStatus() {
+      const status = document.getElementById('status');
+      const value = status.value;
+      status.setAttribute('data-status', value);
+    }
+
     function gerarMensagem() {
+      const idChamado = document.getElementById('idChamado').value;
       const local = document.getElementById('local').value;
       const status = document.getElementById('status').value;
       const chamado = document.getElementById('chamado').value;
@@ -124,62 +161,67 @@
       const data = document.getElementById('data').value;
       const executado = document.getElementById('executado').value;
 
-      // Formata a data no formato dd/mm/yyyy
-      let dataFormatada = new Date(data).toLocaleDateString('pt-BR');
+      const dataFormatada = data
+        ? new Date(data + 'T00:00:00').toLocaleDateString('pt-BR')
+        : 'Data não informada';
 
-      if (dataFormatada === "Invalid Date") {
-        dataFormatada = "Data não informada";
-      }
-      const mensagem =
-        `*📍 Local:* ${local}
+      const emojiStatus = {
+        "Concluído": "✅",
+        "Em andamento": "🔄",
+        "Aguardando material": "⏳",
+        "Na fila": "🕗"
+      };
 
-*📌 Status:* ${status}
+      const mensagem = `*🆔 ID do Chamado:* ${idChamado}\n\n` +
+                       `*📍 Local:* ${local}\n\n` +
+                       `*📌 Status:* ${status} ${emojiStatus[status] || ""}\n\n` +
+                       `*🛠️ Descrição do chamado:*\n${chamado}\n\n` +
+                       `*✅ Ação realizada:*\n${acao}\n\n` +
+                       `*📅 Data da execução:* ${dataFormatada}\n\n` +
+                       `*👷 Executado por:* ${executado}`;
 
-*🛠️ Chamado:* ${chamado}
+      document.getElementById('output').textContent = mensagem;
 
-*✅ Ação realizada:* ${acao}
+      navigator.clipboard.writeText(mensagem)
+        .then(() => {
+          const alertDiv = document.getElementById('copiedAlert');
+          alertDiv.style.display = 'block';
+          setTimeout(() => alertDiv.style.display = 'none', 2000);
+        });
 
-*📅 Data da execução:* ${dataFormatada}
-
-*👷 Executado por:* ${executado}`;
-
-      document.getElementById('output').innerHTML = mensagem;
-
-      // Oculta formulário e mostra botão de reabrir
+      // Oculta o formulário e mostra botão de reabrir
       document.getElementById('formulario').classList.add('hidden');
-      document.getElementById('toggleForm').classList.remove('hidden');
+      document.getElementById('reabrir').style.display = 'block';
     }
 
-    function abrirFormulario() {
-      document.getElementById('formulario').classList.remove('hidden');
-      document.getElementById('toggleForm').classList.add('hidden');
-    }
-
-    function copiarTexto() {
-      const texto = document.getElementById('output').innerText;
-
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(texto)
-          .then(() => alert('Texto copiado com sucesso!'))
-          .catch((err) => alert('Erro ao copiar texto: ' + err));
-      } else {
-        const textArea = document.createElement('textarea');
-        textArea.value = texto;
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-
-        try {
-          document.execCommand('copy');
-          alert('Texto copiado com sucesso!');
-        } catch (err) {
-          alert('Erro ao copiar texto: ' + err);
-        }
-
-        document.body.removeChild(textArea);
+    function abrirWhatsapp() {
+      const mensagem = encodeURIComponent(document.getElementById('output').textContent);
+      if (mensagem.trim() === "") {
+        alert("Gere a mensagem primeiro!");
+        return;
       }
+      window.open(`https://wa.me/?text=${mensagem}`, '_blank');
     }
+
+    function limparFormulario() {
+      document.getElementById('idChamado').value = "";
+      document.getElementById('local').value = "";
+      document.getElementById('status').selectedIndex = 0;
+      document.getElementById('status').setAttribute('data-status', '');
+      document.getElementById('chamado').value = "";
+      document.getElementById('acao').value = "";
+      document.getElementById('data').value = "";
+      document.getElementById('executado').value = "";
+      document.getElementById('output').textContent = "";
+      document.getElementById('copiedAlert').style.display = 'none';
+    }
+
+    function reabrirFormulario() {
+      document.getElementById('formulario').classList.remove('hidden');
+      document.getElementById('reabrir').style.display = 'none';
+    }
+
+    window.onload = atualizarCorStatus;
   </script>
 </body>
-
 </html>
